@@ -36,5 +36,18 @@ CTL-OPT BNDDIR('SERVICEBCO');
 //                    PROGRAMA PRINCIPAL                             //
 // ----------------------------------------------------------------- //
 
+// Validamos el Flujo del Usuario
+DOW *IN03 = *OFF;
+
+  SELECT;
+    When *IN05 = *ON;
+      // Refrescamos Pantalla
+    When *IN01 = *ON;
+      // Ejecutamos el proceso que genera JSON
+  ENDSL;
+
+// Se finaliza el ciclo para la prueba
+*IN03 = *ON;
+ENDDO;
 
 *INLR = *ON;
