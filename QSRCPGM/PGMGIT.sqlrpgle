@@ -2,7 +2,7 @@
 
 // ----------------------------------------------------------------- //
 // PROGRAMA...: PGMGIT                                               //
-// DESCRIPCIÓN: PROGRAMA PROBAR QUE GIT FUNCIONA CON AS400     //
+// DESCRIPCIÓN: PROGRAMA PRUEBA GIT FUNCIONA CON AS400               //
 // AUTOR......: JORGE DE TRINIDAD ZEPEDA NOVACOMP S.A.               //
 // FECHA......: NOVIEMBRE 2023.                                      //
 // ----------------------------------------------------------------- //
