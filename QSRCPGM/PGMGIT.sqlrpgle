@@ -30,7 +30,7 @@ CTL-OPT BNDDIR('SERVICEBCO');
 // ----------------------------------------------------------------- //
 //                    VARIABLES GLABALES                             //
 // ----------------------------------------------------------------- //
-
+dcl-s vVerdad IND INZ(*OFF);
 
 // ----------------------------------------------------------------- //
 //                    PROGRAMA PRINCIPAL                             //
@@ -39,15 +39,14 @@ CTL-OPT BNDDIR('SERVICEBCO');
 // Validamos el Flujo del Usuario
 DOW *IN03 = *OFF;
 
-  SELECT;
-    When *IN05 = *ON;
-      // Refrescamos Pantalla
-    When *IN01 = *ON;
-      // Ejecutamos el proceso que genera JSON
-  ENDSL;
+  if (vVerdad = *ON);
+    //PONER CODIGO LISTO
+  else;
+   //EN CASO DE ERROR
+  endif;
 
 // Se finaliza el ciclo para la prueba
-*IN03 = *ON;
+  *IN03 = *ON;
 ENDDO;
 
 *INLR = *ON;
