@@ -36,51 +36,12 @@
     ]
   },
   {
-    "name": "Create COBOL Program (SQL)",
-    "command": "CRTSQLCBLI OBJ(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OPTION(*EVENTF) DBGVIEW(*SOURCE) CLOSQLCSR(*ENDMOD) CVTCCSID(*JOB) TOSRCFILE(&CURLIB/QSQLTEMP)",
-    "deployFirst": true,
-    "environment": "ile",
-    "extensions": [
-      "SQLCBL",
-      "SQLCBBLE",
-      "SQLCBLLE",
-      "COB",
-      "CBLLE",
-      "CBL",
-      "CBBLE"
-    ]
-  },
-  {
-    "name": "Create COBOL Module (SQL)",
-    "command": "CRTSQLCBLI OBJ(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OBJTYPE(*MODULE) OPTION(*EVENTF) DBGVIEW(*SOURCE) CLOSQLCSR(*ENDMOD) CVTCCSID(*JOB) TOSRCFILE(&CURLIB/QSQLTEMP)",
-    "deployFirst": true,
-    "environment": "ile",
-    "extensions": [
-      "SQLCBL",
-      "SQLCBBLE",
-      "SQLCBLLE",
-      "COB",
-      "CBLLE",
-      "CBL",
-      "CBBLE"
-    ]
-  },
-  {
     "extensions": [
       "CLP",
       "CLLE"
     ],
     "name": "Create Bound CL Program",
     "command": "CRTBNDCL PGM(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OPTION(*EVENTF) DBGVIEW(*SOURCE)",
-    "deployFirst": true,
-    "environment": "ile"
-  },
-  {
-    "extensions": [
-      "cmd"
-    ],
-    "name": "Create Command",
-    "command": "CRTCMD CMD(&CURLIB/&NAME) PGM(&CURLIB/&NAME) SRCSTMF('&RELATIVEPATH') OPTION(*EVENTF)",
     "deployFirst": true,
     "environment": "ile"
   },
@@ -99,6 +60,14 @@
     "name": "Run SQL Statements (RUNSQLSTM)",
     "command": "RUNSQLSTM SRCSTMF('&FULLPATH') COMMIT(*NONE) NAMING(*SQL)",
     "deployFirst": true,
+    "environment": "ile"
+  },
+  {
+    "extensions": [
+      "GLOBAL"
+    ],
+    "name": "Create Service Program (CRTSRVPGM)",
+    "command": "CRTSRVPGM SRVPGM(&CURLIB/&NAME) EXPORT(*ALL) BNDSRVPGM(*NONE) BNDDIR(*NONE) ACTGRP(*CALLER)",
     "environment": "ile"
   }
 ]
