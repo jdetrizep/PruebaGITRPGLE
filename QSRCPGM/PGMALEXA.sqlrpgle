@@ -30,11 +30,31 @@ CTL-OPT BNDDIR('SERVICEBCO');
 // ----------------------------------------------------------------- //
 //                    VARIABLES GLABALES                             //
 // ----------------------------------------------------------------- //
-
+dcl-s vNumero	ZONED(10:0) Inz(*ZEROS);
+dcl-s vNumero2	ZONED(10:0) Inz(*ZEROS);
+dcl-s vResultado	ZONED(10:0) Inz(*ZEROS);
 
 // ----------------------------------------------------------------- //
 //                    PROGRAMA PRINCIPAL                             //
 // ----------------------------------------------------------------- //
 
+vNumero = 10;
+vNumero2 = 20;
 
+vResultado = Suma(vNumero:vNumero2);
 *INLR = *ON;
+
+//Procedimiento para realizar el caluclo de la suma de dos números
+Dcl-Proc Suma export;
+    Dcl-Pi *N ZONED(10:0);
+        a ZONED(10:0) Const;
+        b ZONED(10:0) Const;
+    End-Pi;
+
+    Dcl-S c ZONED(10:0);
+
+    c = a + b;
+
+    Return c;
+End-Proc;
+
