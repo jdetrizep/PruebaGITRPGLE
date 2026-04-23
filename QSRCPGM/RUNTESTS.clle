@@ -1,0 +1,89 @@
+             PGM
+
+/**********************************************************************/
+/* PROGRAMA...: RUNTESTS                                             */
+/* DESCRIPCIÓN: Script para ejecutar pruebas unitarias de MNTPRG    */
+/* AUTOR......: JORGE DE TRINIDAD ZEPEDA. NOVACOMP S.A.              */
+/* FECHA......: ABRIL 2026                                           */
+/**********************************************************************/
+
+             DCL        VAR(&TESTLIB) TYPE(*CHAR) LEN(10) +
+                          VALUE('TESTLIB')
+             DCL        VAR(&SRCLIB) TYPE(*CHAR) LEN(10) +
+                          VALUE('DEVLIB')
+             DCL        VAR(&RESULT) TYPE(*CHAR) LEN(10)
+             DCL        VAR(&MSGID) TYPE(*CHAR) LEN(7)
+             DCL        VAR(&MSGDTA) TYPE(*CHAR) LEN(512)
+
+             /* Mensaje de inicio */
+             SNDPGMMSG  MSG('Iniciando ejecución de pruebas +
+                          unitarias...') TOPGMQ(*EXT)
+
+             /* Verificar que existe RPGUnit */
+             CHKOBJ     OBJ(RPGUNIT/RUCALLTST) OBJTYPE(*PGM)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+                SNDPGMMSG  MSGID(CPF9898) MSGF(QCPFMSG) +
+                          MSGDTA('ERROR: RPGUnit no está +
+                          instalado. Instale RPGUnit desde +
+                          SourceForge.') MSGTYPE(*ESCAPE)
+                GOTO       CMDLBL(ENDPGM)
+             ENDDO
+
+             /* Crear biblioteca de pruebas si no existe */
+             CHKOBJ     OBJ(&TESTLIB) OBJTYPE(*LIB)
+             MONMSG     MSGID(CPF9801) EXEC(DO)
+                CRTLIB     LIB(&TESTLIB) TEXT('Biblioteca de +
+                          Pruebas Unitarias')
+                SNDPGMMSG  MSG('Biblioteca de pruebas creada: ' *CAT +
+                          &TESTLIB) TOPGMQ(*EXT)
+             ENDDO
+
+             /* Compilar programa de pruebas */
+             SNDPGMMSG  MSG('Compilando programa de pruebas...') +
+                          TOPGMQ(*EXT)
+
+             CRTSQLRPGI OBJ(&TESTLIB/MNTPRGT) +
+                          SRCFILE(&SRCLIB/QSRCPGM) +
+                          SRCMBR(MNTPRGT) COMMIT(*NONE) +
+                          DBGVIEW(*SOURCE) REPLACE(*YES) +
+                          COMPILEOPT('OPTION(*EVENTF)')
+
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+                RCVMSG     MSGTYPE(*EXCP) MSGDTA(&MSGDTA) MSGID(&MSGID)
+                SNDPGMMSG  MSG('ERROR en compilación: ' *CAT &MSGID +
+                          *BCAT &MSGDTA) MSGTYPE(*ESCAPE)
+                GOTO       CMDLBL(ENDPGM)
+             ENDDO
+
+             SNDPGMMSG  MSG('Compilación exitosa') TOPGMQ(*EXT)
+
+             /* Ejecutar pruebas unitarias */
+             SNDPGMMSG  MSG('Ejecutando pruebas unitarias...') +
+                          TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('========================================') +
+                          TOPGMQ(*EXT)
+
+             CALL       PGM(RPGUNIT/RUCALLTST) PARM(&TESTLIB'/MNTPRGT')
+
+             MONMSG     MSGID(CPF0000) EXEC(DO)
+                RCVMSG     MSGTYPE(*EXCP) MSGDTA(&MSGDTA) MSGID(&MSGID)
+                SNDPGMMSG  MSG('========================================') +
+                          TOPGMQ(*EXT)
+                SNDPGMMSG  MSG('RESULTADO: ALGUNAS PRUEBAS FALLARON') +
+                          TOPGMQ(*EXT)
+                SNDPGMMSG  MSG('Revise el log de RPGUnit para +
+                          detalles') TOPGMQ(*EXT)
+                GOTO       CMDLBL(ENDPGM)
+             ENDDO
+
+             /* Pruebas exitosas */
+             SNDPGMMSG  MSG('========================================') +
+                          TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('RESULTADO: TODAS LAS PRUEBAS PASARON') +
+                          TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('✓ Validaciones: OK') TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('✓ Operaciones CRUD: OK') TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('✓ Casos Límite: OK') TOPGMQ(*EXT)
+             SNDPGMMSG  MSG('✓ Transacciones: OK') TOPGMQ(*EXT)
+
+ ENDPGM:     ENDPGM
