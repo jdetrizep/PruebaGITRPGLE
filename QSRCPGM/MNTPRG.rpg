@@ -1,0 +1,148 @@
+     HDATFMT(*ISO)
+     HCOPYRIGHT('Copyrigth NovaTalentos 2023')
+     HDEBUG(*YES)
+     H
+     ***********************************************************************
+     ** PROGRAMA...: MANTPRO                                              **
+     ** DESCRIPCIÓN: PROGRAMA DE MANTENIMIENTO DE PROVINCIAS              **
+     ** AUTOR......: JORGE DE TRINIDAD ZEPEDA. NOVACOMP S.A.              **
+     ** FECHA......: JUNIO 2023.                                          **
+     ***********************************************************************
+     ** DESCRIPCIÓN:                                                      **
+     ** AUTOR......:                                                      **
+     ** FECHA......:                                                      **
+     ***********************************************************************
+     **
+     FMANPROFM  CF   E             WORKSTN SFILE(PANTSFLPRO:RRN)
+     F                                     INFDS(INFDS)
+     FSISPROV   UF A E           K DISK
+
+      **================ DEFINICIONES DE PROGRAMA =======================**
+     DINFDS            DS
+     DRRN                             4  0
+
+      **=================== PROGRAMA PRINCIPAL ==========================**
+     C                   EXSR      DSPSFL
+     C     *IN03         DOWEQ     *OFF
+     C     *IN05         DOWEQ     *OFF
+     C                   IF        *IN06
+     C                   EXSR      SRADD
+     C                   ELSE
+     C                   EXSR      LEESFL
+     C                   ENDIF
+     C                   SETON                                        05
+     C                   ENDDO
+     C                   EXSR      CLRSFL
+     C                   EXSR      FILSFL
+     C                   EXSR      DSPSFL
+     C                   ENDDO
+     C                   SETON                                        LR
+     C**=============== RUTINA DE INICIO ================================**
+     C     *INZSR        BEGSR
+     C                   SETOFF                                       505152
+     C                   SETOFF                                       45
+     C                   Z-ADD     *ZEROS        RRN
+     C                   EVAL      S_RECNO = 1
+     C                   EXSR      CLRSFL
+     C                   EXSR      FILSFL
+     C                   ENDSR
+
+     C**=============== RUTINA LIMPIAR SUBFILE ==========================**
+     C     CLRSFL        BEGSR
+     C                   EVAL      RRN = 0
+     C                   SETON                                        50
+     C                   WRITE     PANTCNTPRO
+     C                   SETOFF                                       50
+     C                   ENDSR
+
+     C**=============== RUTINA LLENA EL SUBFILE =========================**
+     C     FILSFL        BEGSR
+     C                   SETOFF                                       45
+     C     *LOVAL        SETLL     SISPROV
+     C                   DOU       %EOF
+     C                   READ      SISPROV
+     C                   IF        NOT %EOF
+     C                   EVAL      VARCODPRO = IDPROV
+     C                   EVAL      VARNOMPRO = NOMPRO
+     C                   ADD       1             RRN
+     C                   IF        RRN = 9999
+     C                   LEAVE
+     C                   ENDIF
+     C                   WRITE     PANTSFLPRO
+     C                   ENDIF
+     C                   ENDDO
+     C                   ENDSR
+
+     C**=============== RUTINA DESPLIEGA SUBFILE ========================**
+     C     DSPSFL        BEGSR
+     C                   SETON                                        5152
+     C                   IF        RRN <= *ZEROS
+     C                   SETOFF                                       52
+     C                   ENDIF
+     C                   WRITE     PANTINIPIE
+     C                   EXFMT     PANTCNTPRO
+     C                   EVAL      MSGERR = *BLANKS
+     C                   SETOFF                                       5152
+     C                   ENDSR
+
+     C**=============== RUTINA AÑADIR REGISTRO ==========================**
+     C     SRADD         BEGSR
+     C     *IN12         DOWEQ     *OFF
+     C                   EXFMT     PANTINSPRO
+     C                   MOVEL     *BLANKS       VERROR
+     C                   IF        CODPROFM = *ZEROS
+     C                   EVAL      VERROR = 'DIGITE UN CODIGO DE PROVINCIA'
+     C                   ENDIF
+     C                   IF        NOMPROFM = *BLANKS
+     C                   EVAL      VERROR = 'DIGITE UNA DESCRICIÓN DE PROVINCIA'
+     C                   ENDIF
+     C                   Z-ADD     CODPROFM      CODPR             9 0
+     C     CODPR         CHAIN     SISPROV
+     C                   IF        %FOUND()
+     C                   EVAL      VERROR = 'PROVINCIA YA EXISTEÜÜÜÜ'
+     C                   ENDIF
+     C                   IF        *IN01 AND VERROR = *BLANKS
+     C                   Z-ADD     CODPROFM      IDPROV
+     C                   MOVEL     NOMPROFM      NOMPRO
+     C                   WRITE     SISRPROV
+     C                   CLEAR                   SISRPROV
+     C                   LEAVE
+     C                   ENDIF
+     C                   ENDDO
+     C                   SETOFF                                       0112
+     C                   ENDSR
+
+     C**=============== RUTINA LEE EL SUBFILE ===========================**
+     C     LEESFL        BEGSR
+     C                   READC     PANTSFLPRO
+     C                   DOW       NOT %EOF()
+     C                   SELECT
+     C     VAROPC        WHENEQ    2
+     C**EDITAR
+     C     VAROPC        WHENEQ    4
+     C**ELIMINAR
+     C     VAROPC        WHENEQ    5
+     C                   EXSR      SRCONS
+     C                   Z-ADD     *ZEROS        VAROPC
+     C                   OTHER
+     C                   EVAL      MSGERR = 'OPCIÓN INCORRECTAÜÜÜ'
+     C                   ENDSL
+     C                   READC     PANTSFLPRO
+     C                   ENDDO
+     C                   ENDSR
+
+     C**=============== RUTINA CONSULTA REG =============================**
+     C     SRCONS        BEGSR
+     C                   Z-ADD     VARCODPRO     CODP              9 0
+     C     CODP          CHAIN     SISPROV
+     C                   IF        %FOUND()
+     C                   EVAL      CODPROFM = CODP
+     C                   EVAL      NOMPROFM = NOMPRO
+     C     *IN12         DOWEQ     *OFF
+     C                   EXFMT     PANTCONPRO
+     C                   ENDDO
+     C                   SETOFF                                       12
+     C                   ELSE
+     C                   EVAL      MSGERR = 'EL REGISTRO NO EXISTE. REFRESQUEÜÜ'
+     C                   ENDIF
+     C                   ENDSR
